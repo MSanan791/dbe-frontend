@@ -1,18 +1,17 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import SidebarLayout from './assets/sidebar.jsx'
-import './App.css'
+import { useState } from 'react';
+import { ConfigProvider } from 'antd'; // Import ConfigProvider
+import SidebarLayout from './assets/sidebar.jsx'; // Assuming your Sidebar is a custom component
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
-  return (<>
-    <SidebarLayout style={{ minHeight: '100vh' }}></SidebarLayout>
-    
-  </>
-  
-  )
+  return (
+    // Wrap your app with ConfigProvider and enable dark mode
+    <ConfigProvider theme={{ mode: 'dark' }}>
+      <SidebarLayout style={{ minHeight: '100vh' }} />
+    </ConfigProvider>
+  );
 }
 
-export default App
+export default App;

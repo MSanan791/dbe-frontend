@@ -13,15 +13,23 @@ import axios from 'axios';
 import StudentTable from './studentTable';
 const { Header, Content, Footer, Sider } = Layout;
 import ProvidersTable from './providerstable';
+import InstitutionsTable from './institutions table';
+import InternshipTrack from './internshipTrack';
+import bgImage from './photo-1530533718754-001d2668365a.jpg';
+
 // const items1 = ['1', '2', '3'].map(key => ({
 //   key,
 //   label: `nav ${key}`,
 // }));
 
+import InternshipTable from './internship';;
+
 const items2 = [
   { icon: UserOutlined, label: 'Student', path: '/user' },
   { icon: PayCircleOutlined, label: 'Providers', path: '/provider' },
   { icon: ReadOutlined, label: 'Institutions', path: '/Institutions' },
+  { icon: ReadOutlined, label: 'Applications', path: '/internship_status' },
+  { icon: ReadOutlined, label: 'Internship Track', path: '/internshipTracking' }
 ].map((item, index) => ({
   key: item.path,
   icon: React.createElement(item.icon),
@@ -66,29 +74,60 @@ const AppLayout = () => {
   } = theme.useToken();
 
   const navigate = useNavigate();
+  const backgroundStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundImage: `url(${bgImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    zIndex: -2,
+  };
+  
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust opacity as needed
+    zIndex: -1,
+  };
+  
+  const contentStyle = {
+    position: 'relative',
+    zIndex: 0,
+  };
+  
+
 
   return (
-    <Layout>
-      <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <div className="demo-logo" style={{ height: `5em` }} />
+    <Layout
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh'
+      }}
+    >
+      <Header style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', alignItems: 'center' }}>
         <Avatar
-    size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
-    icon={<AntDesignOutlined />}
-  /><h3 style={{ color: 'white', marginLeft: '20px' }}>Internship Tracker</h3>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['2']}
-          
-          style={{ flex: 1, minWidth: 0 }}
+          size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 60 }}
+          icon={<AntDesignOutlined />}
         />
+        <h3 style={{ color: 'white', marginLeft: '20px' }}>Internship Tracker</h3>
+      
       </Header>
       <div style={{ padding: '0 48px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Login</Breadcrumb.Item>
-          <Breadcrumb.Item>Authentication</Breadcrumb.Item>
-          <Breadcrumb.Item>Internship-Tracker</Breadcrumb.Item>
-        </Breadcrumb>
+      <Breadcrumb style={{ margin: '16px 0', color: 'white' }}>
+    <Breadcrumb.Item style={{ color: 'white' }}>Login</Breadcrumb.Item>
+    <Breadcrumb.Item style={{ color: 'white' }}>Authentication</Breadcrumb.Item>
+    <Breadcrumb.Item style={{ color: 'white' }}>Internship-Tracker</Breadcrumb.Item>
+  </Breadcrumb>
+
+
         <Layout
           style={{ padding: '24px 0', background: colorBgContainer, borderRadius: borderRadiusLG }}
         >
@@ -101,13 +140,15 @@ const AppLayout = () => {
               onClick={({ key }) => navigate(key)} // handle navigation
             />
           </Sider>
-          <Content style={{ padding: '0 24px', minHeight: "75vh "}}>
+          <Content style={{ padding: '0 24px', minHeight: "75vh ", background: 'rgba(255,255, 255, 0.3)'}}>
             <Routes>
 
 
               <Route path="/user" element={<StudentTable/>} />
               <Route path="/provider" element={<ProvidersTable />} />
-              <Route path="/notification" element={<NotificationPage />} />
+              <Route path="/Institutions" element={<InstitutionsTable/>} />
+              <Route path="/internship_status" element={<InternshipTable/>} />
+              <Route path="/internshipTracking" element={<InternshipTrack/>} />
               <Route path="*" element={<p>Select a menu option</p>} />
 
 
@@ -116,8 +157,8 @@ const AppLayout = () => {
           </Content>
         </Layout>
       </div>
-      <Footer style={{ textAlign: 'center' }}>
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+      <Footer style={{ textAlign: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white' }}>
+        Internship Tracker ©{new Date().getFullYear()} Created by Sanan, Suleman and Sheheryar
       </Footer>
     </Layout>
   );

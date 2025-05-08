@@ -13,12 +13,15 @@ const ProviderTable = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editProvider, setEditProvider] = useState(null);
 
+  const [filteredData, setFilteredData] = useState([]);
+  
   useEffect(() => {
     axios.get('http://localhost:8000/api/provider/get-providers')
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : res.data.providers || [];
         const dataWithKeys = data.map((p, i) => ({ key: i, ...p }));
         setProviders(dataWithKeys);
+        setFilteredData(dataWithKeys); // Set filtered data initially to all data
         setLoading(false);
       })
       .catch((err) => {
@@ -44,6 +47,7 @@ const ProviderTable = () => {
             p.id === editProvider.id ? { ...res.data.updatedProvider, key: p.key } : p
           );
           setProviders(updated);
+          setFilteredData(updated); // Update filtered data as well
           message.success('Provider updated');
           setIsModalVisible(false);
           setEditProvider(null);
@@ -56,6 +60,7 @@ const ProviderTable = () => {
       axios.post('http://localhost:8000/api/provider/add-provider', editProvider)
         .then((res) => {
           setProviders((prev) => [...prev, { ...res.data, key: prev.length }]);
+          setFilteredData((prev) => [...prev, { ...res.data, key: prev.length }]); // Add to filtered data as well
           message.success('Provider added');
           setIsModalVisible(false);
           setEditProvider(null);
@@ -68,17 +73,17 @@ const ProviderTable = () => {
   };
 
   const handleDelete = (id) => {
-    console.log(id); // Add this line to check if the id is correct
+    console.log(id);
     Modal.confirm({
         title: 'Are you sure you want to delete this provider?',
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
         onOk: () => {
-            // Ensure the correct id is used in the URL
             axios.delete(`http://localhost:8000/api/provider/remove-provider/${id}`)
                 .then(() => {
                     setProviders((prev) => prev.filter((p) => p.id !== id));
+                    setFilteredData((prev) => prev.filter((p) => p.id !== id)); // Update filtered data as well
                     message.success('Provider deleted');
                 })
                 .catch((err) => {
@@ -87,21 +92,27 @@ const ProviderTable = () => {
                 });
         }
     });
-};
-
-  
+  };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setEditProvider(null);
   };
 
+  const handleFilterChange = (value, key) => {
+    const filtered = providers.filter((provider) =>
+      provider[key].toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
   if (error) return <div>Error: {error}</div>;
 
   return (
     <>
+    <h2>Providers</h2>
       <Table
-        dataSource={providers}
+        dataSource={filteredData}
         loading={loading}
         scroll={{ x: 'max-content' }}
         onRow={(record) => ({
@@ -109,12 +120,189 @@ const ProviderTable = () => {
         })}
         rowClassName="clickable-row"
       >
-        <Column title="ID" dataIndex="id" key="id" />
-        <Column title="Name" dataIndex="name_" key="name_" />
-        <Column title="Type" dataIndex="type_" key="type_" />
-        <Column title="Email" dataIndex="email" key="email" />
-        <Column title="Website" dataIndex="website" key="website" />
-        <Column title="Field" dataIndex="field" key="field" />
+        <Column
+          title="ID"
+          dataIndex="id"
+          key="id"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search ID"
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys([e.target.value])}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.id.toString().includes(value)}
+        />
+        <Column
+          title="Name"
+          dataIndex="name_"
+          key="name_"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search Name"
+                value={selectedKeys[0]}
+                onChange={(e) => {
+                  setSelectedKeys([e.target.value]);
+                  handleFilterChange(e.target.value, 'name_');
+                }}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.name_.toLowerCase().includes(value.toLowerCase())}
+        />
+        <Column
+          title="Type"
+          dataIndex="type_"
+          key="type_"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search Type"
+                value={selectedKeys[0]}
+                onChange={(e) => {
+                  setSelectedKeys([e.target.value]);
+                  handleFilterChange(e.target.value, 'type_');
+                }}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.type_.toLowerCase().includes(value.toLowerCase())}
+        />
+        <Column
+          title="Email"
+          dataIndex="email"
+          key="email"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search Email"
+                value={selectedKeys[0]}
+                onChange={(e) => {
+                  setSelectedKeys([e.target.value]);
+                  handleFilterChange(e.target.value, 'email');
+                }}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.email.toLowerCase().includes(value.toLowerCase())}
+        />
+        <Column
+          title="Website"
+          dataIndex="website"
+          key="website"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search Website"
+                value={selectedKeys[0]}
+                onChange={(e) => {
+                  setSelectedKeys([e.target.value]);
+                  handleFilterChange(e.target.value, 'website');
+                }}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.website.toLowerCase().includes(value.toLowerCase())}
+        />
+        <Column
+          title="Field"
+          dataIndex="field"
+          key="field"
+          filterDropdown={({ setSelectedKeys, selectedKeys, confirm }) => (
+            <div>
+              <Input
+                placeholder="Search Field"
+                value={selectedKeys[0]}
+                onChange={(e) => {
+                  setSelectedKeys([e.target.value]);
+                  handleFilterChange(e.target.value, 'field');
+                }}
+                onPressEnter={() => confirm()}
+                style={{ marginBottom: 8, display: 'block' }}
+              />
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button onClick={() => setSelectedKeys([])} size="small" style={{ width: 90 }}>
+                Reset
+              </Button>
+            </div>
+          )}
+          onFilter={(value, record) => record.field.toLowerCase().includes(value.toLowerCase())}
+        />
         <Column
           title="Action"
           key="action"
