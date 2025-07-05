@@ -42,6 +42,7 @@ const App = () => {
                 }}
               />
             </div>
+            
           ))}
         </Carousel>
       )}
