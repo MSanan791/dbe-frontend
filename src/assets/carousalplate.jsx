@@ -44,7 +44,7 @@ const App = () => {
             </div>
             
           ))}
-          
+        
         </Carousel>
       )}
     </div>
